@@ -1,0 +1,19 @@
+# editorconfig.org
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+indent_size = tab
+indent_style = tab
+insert_final_newline = false
+tab_width = 4
+trim_trailing_whitespace = true
+
+[*.cshtml]
+charset = utf-8-bom
+
+# Tabs are not supported in YAML: https://yaml.org/faq.html
+[*.{yaml,yml}]
+indent_size = 2
+indent_style = space

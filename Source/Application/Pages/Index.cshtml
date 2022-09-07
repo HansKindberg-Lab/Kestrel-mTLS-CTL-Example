@@ -1,0 +1,45 @@
+﻿@page
+@using System.Runtime.InteropServices
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Kestrel-mTLS-CTL-Example</title>
+    </head>
+    <body>
+        <h1>Kestrel-mTLS-CTL-Example</h1>
+        <h2>Client-certificate</h2>
+        <p>@Html.Raw(HttpContext.Connection.ClientCertificate?.ToString() ?? "<i>null</i>")</p>
+        <h2>Connection</h2>
+        <ul>
+            <li>Local ip-address: <strong>@HttpContext.Connection.LocalIpAddress</strong></li>
+            <li>Local port: <strong>@HttpContext.Connection.LocalPort</strong></li>
+            <li>Remote ip-address: <strong>@HttpContext.Connection.RemoteIpAddress</strong></li>
+            <li>Remote port: <strong>@HttpContext.Connection.RemotePort</strong></li>
+        </ul>
+        <h2>Environment</h2>
+        <ul>
+            <li>Framework-description: <strong>@RuntimeInformation.FrameworkDescription</strong></li>
+            <li>OS 64-bit: <strong>@Environment.Is64BitOperatingSystem</strong></li>
+            <li>OS-architecture: <strong>@RuntimeInformation.OSArchitecture</strong></li>
+            <li>OS-description: <strong>@RuntimeInformation.OSDescription</strong></li>
+            <li>OS-version: <strong>@Environment.OSVersion</strong></li>
+            <li>Process-architecture: <strong>@RuntimeInformation.ProcessArchitecture</strong></li>
+            <li>Runtime-identifier: <strong>@RuntimeInformation.RuntimeIdentifier</strong></li>
+        </ul>
+        <h2>Request</h2>
+        <ul>
+            <li>Host: <strong>@Request.Host</strong></li>
+            <li>Is https: <strong>@Request.IsHttps</strong></li>
+            <li>Protocol: <strong>@Request.Protocol</strong></li>
+            <li>Scheme: <strong>@Request.Scheme</strong></li>
+        </ul>
+        <h2>Request-headers</h2>
+        <ul>
+            @foreach(var key in Request.Headers.Keys.Order())
+            {
+                <li>@key: <strong>@Request.Headers[key]</strong></li>
+            }
+        </ul>
+    </body>
+</html>
