@@ -14,6 +14,8 @@ We need net 7 to get it working. When writing this, Dotnet SDK 7 preview 7 is th
 
 - [Download .NET SDKs for Visual Studio](https://dotnet.microsoft.com/en-us/download/visual-studio-sdks)
 
+To enable .NET SDK preview in Visual Studio: **Tools -> Options -> Environment -> Preview Features** and then check **Use previews of the .NET SDK (requires restart)**
+
 ## 1 Briefly
 
 This is briefly howto fix it:
