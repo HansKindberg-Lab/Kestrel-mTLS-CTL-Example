@@ -126,7 +126,7 @@ The certificates in this solution are created by using this web-application, [Ce
 							"Subject": "CN=Kestrel-mTLS-CTL-Example https-certificate",
 							"SubjectAlternativeName": {
 								"DnsNames": [
-									"*"
+									"localhost"
 								]
 							}
 						}
