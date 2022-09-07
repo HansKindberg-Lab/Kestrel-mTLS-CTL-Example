@@ -1,5 +1,7 @@
 # Kestrel-mTLS-CTL-Example
 
+Kestrel mutual TLS certificate trust list example.
+
 This is an example on howto set up mTLS and sending a client-certificate trust list with Kestrel.
 
 This dotnet-issue can be used as a starting point to explain what we want to achieve:
