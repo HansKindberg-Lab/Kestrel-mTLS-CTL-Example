@@ -10,11 +10,7 @@ This dotnet-issue can be used as a starting point to explain what we want to ach
 
 This example works when running Kestrel on Linux (by usig Docker). I have not got it working running Kestrel on Windows.
 
-We need net 7 to get it working. When writing this, Dotnet SDK 7 preview 7 is the latest preview. To install:
-
-- [Download .NET SDKs for Visual Studio](https://dotnet.microsoft.com/en-us/download/visual-studio-sdks)
-
-To enable .NET SDK preview in Visual Studio: **Tools -> Options -> Environment -> Preview Features** and then check **Use previews of the .NET SDK (requires restart)**
+We need net 7 to get it working.
 
 ## 1 Briefly
 
