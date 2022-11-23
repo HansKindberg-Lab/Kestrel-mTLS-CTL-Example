@@ -23,6 +23,9 @@ builder.WebHost.ConfigureKestrel((webHostBuilderContext, kestrelServerOptions) =
 			if(!sslServerAuthenticationOptions.ClientCertificateRequired)
 				return;
 
+			if(sslServerAuthenticationOptions.ServerCertificate is not X509Certificate2 serverCertificate)
+				throw new InvalidOperationException("The server-certificate is invalid.");
+
 			sslServerAuthenticationOptions.CertificateChainPolicy = new X509ChainPolicy
 			{
 				/*
@@ -40,13 +43,27 @@ builder.WebHost.ConfigureKestrel((webHostBuilderContext, kestrelServerOptions) =
 				TrustMode = X509ChainTrustMode.System
 			};
 
-			var certificates = new X509Certificate2Collection();
-			certificates.ImportFromPemFile("Certificates/intermediate-certificate-1.crt");
-			certificates.ImportFromPemFile("Certificates/intermediate-certificate-2.crt");
+			SslCertificateTrust? sslCertificateTrust;
 
-			var sslCertificateTrust = SslCertificateTrust.CreateForX509Collection(certificates, true);
+			if(OperatingSystem.IsWindows())
+			{
+				using(var store = new X509Store(StoreName.CertificateAuthority, StoreLocation.LocalMachine))
+				{
+					store.Open(OpenFlags.ReadOnly);
 
-			sslServerAuthenticationOptions.ServerCertificateContext = SslStreamCertificateContext.Create((X509Certificate2)sslServerAuthenticationOptions.ServerCertificate, null, false, sslCertificateTrust);
+					sslCertificateTrust = SslCertificateTrust.CreateForX509Store(store);
+				}
+			}
+			else
+			{
+				var certificates = new X509Certificate2Collection();
+				certificates.ImportFromPemFile("/etc/ssl/certs/intermediate-certificate-1.crt");
+				certificates.ImportFromPemFile("/etc/ssl/certs/intermediate-certificate-2.crt");
+
+				sslCertificateTrust = SslCertificateTrust.CreateForX509Collection(certificates, true);
+			}
+
+			sslServerAuthenticationOptions.ServerCertificateContext = SslStreamCertificateContext.Create(serverCertificate, null, false, sslCertificateTrust);
 		};
 	});
 	/*

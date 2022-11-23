@@ -398,4 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 
 # Custom
-!Source/Application/Certificates/*.pfx
+!Certificates/*.pfx

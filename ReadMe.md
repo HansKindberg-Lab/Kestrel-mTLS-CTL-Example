@@ -12,6 +12,20 @@ This example works when running Kestrel on Linux (by usig Docker). I have not go
 
 We need net 7 to get it working.
 
+## IMPORTANT
+
+When running with Kestrel on Windows we may need to run Visual Studio as administrator, run as administrator. Otherwise we will get an exception:
+
+	System.Security.Cryptography.CryptographicException: Access denied.
+
+Haven't solved it.
+
+### Links
+
+- [Access denied when trying to load X509Certificate2 on (upgraded) Windows 10 April 2018 Update #25](https://github.com/Microsoft/dotnet-framework-early-access/issues/25)
+- [Default permissions for the MachineKeys folders](https://learn.microsoft.com/en-US/troubleshoot/windows-server/windows-security/default-permissions-machinekeys-folders)
+- [Solving Access Denied in Crypto Machine Keys](https://odetocode.com/blogs/scott/archive/2020/01/12/solving-access-denied-in-crypto-machine-keys.aspx)
+
 ## 1 Briefly
 
 This is briefly howto fix it:
@@ -26,6 +40,9 @@ This is briefly howto fix it:
 			{
 				if(!sslServerAuthenticationOptions.ClientCertificateRequired)
 					return;
+
+				if(sslServerAuthenticationOptions.ServerCertificate is not X509Certificate2 serverCertificate)
+					throw new InvalidOperationException("The server-certificate is invalid.");
 
 				sslServerAuthenticationOptions.CertificateChainPolicy = new X509ChainPolicy
 				{
@@ -44,13 +61,25 @@ This is briefly howto fix it:
 					TrustMode = X509ChainTrustMode.System
 				};
 
-				var certificates = new X509Certificate2Collection();
-				certificates.ImportFromPemFile("Certificates/intermediate-certificate-1.crt");
-				certificates.ImportFromPemFile("Certificates/intermediate-certificate-2.crt");
+				SslCertificateTrust? sslCertificateTrust;
 
-				var sslCertificateTrust = SslCertificateTrust.CreateForX509Collection(certificates, true);
+				if(OperatingSystem.IsWindows())
+				{
+					using(var store = new X509Store(StoreName.CertificateAuthority, StoreLocation.LocalMachine))
+					{
+						sslCertificateTrust = SslCertificateTrust.CreateForX509Store(store);
+					}
+				}
+				else
+				{
+					var certificates = new X509Certificate2Collection();
+					certificates.ImportFromPemFile("/etc/ssl/certs/intermediate-certificate-1.crt");
+					certificates.ImportFromPemFile("/etc/ssl/certs/intermediate-certificate-2.crt");
 
-				sslServerAuthenticationOptions.ServerCertificateContext = SslStreamCertificateContext.Create((X509Certificate2)sslServerAuthenticationOptions.ServerCertificate, null, false, sslCertificateTrust);
+					sslCertificateTrust = SslCertificateTrust.CreateForX509Collection(certificates, true);
+				}
+
+				sslServerAuthenticationOptions.ServerCertificateContext = SslStreamCertificateContext.Create(serverCertificate, null, false, sslCertificateTrust);
 			};
 		});
 	});
@@ -60,17 +89,37 @@ This is briefly howto fix it:
 	{
 		...,
 		"Kestrel": {
-			"Certificates": {
-				"Default": {
-					"KeyPath": "Certificates/https-certificate.key",
-					"Path": "Certificates/https-certificate.crt"
-				}
-			},
 			"EndpointDefaults": {
 				"ClientCertificateMode": "RequireCertificate"
 			}
 		},
 		...
+	}
+
+#### 1.2.1 [appsettings.Docker.json (Linux)](/Source/Application/appsettings.Docker.json#L2)
+
+	{
+		"Kestrel": {
+			"Certificates": {
+				"Default": {
+					"KeyPath": "/etc/ssl/private/https-certificate.key",
+					"Path": "/etc/ssl/private/https-certificate.crt"
+				}
+			}
+		}
+	}
+
+#### 1.2.2 [appsettings.Kestrel.json (Windows)](/Source/Application/appsettings.Kestrel.json#L2)
+
+	{
+		"Kestrel": {
+			"Certificates": {
+				"Default": {
+					"KeyPath": "../../Certificates/https-certificate.key",
+					"Path": "../../Certificates/https-certificate.crt"
+				}
+			}
+		}
 	}
 
 ## 2 Environment

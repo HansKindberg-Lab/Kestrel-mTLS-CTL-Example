@@ -11,6 +11,22 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".root", ".root", "{9703A80A
 		ReadMe.md = ReadMe.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Certificates", "Certificates", "{9804C491-FB08-47A2-8FEF-861C993EC544}"
+	ProjectSection(SolutionItems) = preProject
+		Certificates\client-certificate-1.pfx = Certificates\client-certificate-1.pfx
+		Certificates\client-certificate-2.pfx = Certificates\client-certificate-2.pfx
+		Certificates\client-certificate-3.pfx = Certificates\client-certificate-3.pfx
+		Certificates\client-certificate-4.pfx = Certificates\client-certificate-4.pfx
+		Certificates\https-certificate.crt = Certificates\https-certificate.crt
+		Certificates\https-certificate.key = Certificates\https-certificate.key
+		Certificates\intermediate-certificate-1.crt = Certificates\intermediate-certificate-1.crt
+		Certificates\intermediate-certificate-2.crt = Certificates\intermediate-certificate-2.crt
+		Certificates\intermediate-certificate-3.crt = Certificates\intermediate-certificate-3.crt
+		Certificates\intermediate-certificate-4.crt = Certificates\intermediate-certificate-4.crt
+		Certificates\ReadMe.md = Certificates\ReadMe.md
+		Certificates\root-certificate.crt = Certificates\root-certificate.crt
+	EndProjectSection
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{8B587968-CEC9-4C5B-9E5A-B4F787DD2737}"
 	ProjectSection(SolutionItems) = preProject
 		Source\.dockerignore = Source\.dockerignore
