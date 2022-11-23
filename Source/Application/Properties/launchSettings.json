@@ -2,6 +2,9 @@
 	"profiles": {
 		"Docker": {
 			"commandName": "Docker",
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Docker"
+			},
 			"launchBrowser": true,
 			"launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
 			"publishAllPorts": true,
@@ -12,6 +15,9 @@
 			"applicationUrl": "https://localhost:5000",
 			"commandName": "Project",
 			"dotnetRunMessages": true,
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Kestrel"
+			},
 			"launchBrowser": true
 		}
 	}
