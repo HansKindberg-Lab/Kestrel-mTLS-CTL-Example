@@ -4,9 +4,9 @@
 			"commandName": "Docker",
 			"launchBrowser": true,
 			"launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
-			//"publishAllPorts": true,
-			//"useSSL": true
-			"sslPort": 50000 
+			"publishAllPorts": true,
+			"sslPort": 50000,
+			"useSSL": true
 		},
 		"Kestrel": {
 			"applicationUrl": "https://localhost:5000",
