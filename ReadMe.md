@@ -115,8 +115,8 @@ This is briefly howto fix it:
 		"Kestrel": {
 			"Certificates": {
 				"Default": {
-					"KeyPath": "../../Certificates/https-certificate.key",
-					"Path": "../../Certificates/https-certificate.crt"
+					"KeyPath": "../../.certificates/https-certificate.key",
+					"Path": "../../.certificates/https-certificate.crt"
 				}
 			}
 		}
@@ -138,7 +138,7 @@ In this example the client-certificate trust list will contain 2 intermediate ce
 
 All the necessary certificate-files are included in this solution:
 
-- [/Source/Application/Certificates](/Source/Application/Certificates)
+- [/Source/Application/.certificates](/Source/Application/.certificates)
 
 If you want to create them yourself, you need to create the following certificate-structure.
 
