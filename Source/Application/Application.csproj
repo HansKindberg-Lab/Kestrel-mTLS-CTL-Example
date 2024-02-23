@@ -10,9 +10,6 @@
 		<!-- HTTPS certificate -->
 		<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/https-certificate.crt:/etc/ssl/private/https-certificate.crt:ro"</DockerfileRunArguments>
 		<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/https-certificate.key:/etc/ssl/private/https-certificate.key:ro"</DockerfileRunArguments>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<TargetFramework>net7.0</TargetFramework>
 		<UserSecretsId>649793ff-6d39-4691-98ed-e7c28e2027b0</UserSecretsId>
 	</PropertyGroup>
 	<ItemGroup>
