@@ -17,3 +17,10 @@ charset = utf-8-bom
 [*.{yaml,yml}]
 indent_size = 2
 indent_style = space
+
+[*.cs]
+dotnet_diagnostic.IDE0003.severity = none
+dotnet_diagnostic.IDE0063.severity = none
+
+# Visual Studio
+csharp_space_after_keywords_in_control_flow_statements = false # Avoid space after if in if-statement. Eg. if() and not if ()

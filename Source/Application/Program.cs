@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 /*
 	It would be great if the code below could be accomplished by configuration. I do not know how. Now it is hard-coded.
 */
-builder.WebHost.ConfigureKestrel((webHostBuilderContext, kestrelServerOptions) =>
+builder.WebHost.ConfigureKestrel(kestrelServerOptions =>
 {
 	kestrelServerOptions.ConfigureHttpsDefaults(httpsConnectionAdapterOptions =>
 	{
@@ -18,7 +18,7 @@ builder.WebHost.ConfigureKestrel((webHostBuilderContext, kestrelServerOptions) =
 		//	return sslPolicyErrors == SslPolicyErrors.None;
 		//};
 
-		httpsConnectionAdapterOptions.OnAuthenticate = (connectionContext, sslServerAuthenticationOptions) =>
+		httpsConnectionAdapterOptions.OnAuthenticate = (_, sslServerAuthenticationOptions) =>
 		{
 			if(!sslServerAuthenticationOptions.ClientCertificateRequired)
 				return;
@@ -38,7 +38,7 @@ builder.WebHost.ConfigureKestrel((webHostBuilderContext, kestrelServerOptions) =
 				/*
 					TrustMode = X509ChainTrustMode.System
 					We use the system for trust. As we have imported the intermediate- and root-certificates to the container it should work. The other value
-					is X509ChainTrustMode.CustomRootTrust. I do not know what is required to do when using that value. But using the system-trust feels more safe. 
+					is X509ChainTrustMode.CustomRootTrust. I do not know what is required to do when using that value. But using the system-trust feels more safe.
 				*/
 				TrustMode = X509ChainTrustMode.System
 			};
@@ -47,11 +47,23 @@ builder.WebHost.ConfigureKestrel((webHostBuilderContext, kestrelServerOptions) =
 
 			if(OperatingSystem.IsWindows())
 			{
-				using(var store = new X509Store(StoreName.CertificateAuthority, StoreLocation.LocalMachine))
+				/*
+					On Windows we can only set the SSL-certificate-trust to the LocalMachine store. If not we get an exception.
+
+					System.PlatformNotSupportedException: 'Only LocalMachine stores are supported on Windows.':
+
+					#if TARGET_WINDOWS
+						if (sendTrustInHandshake && store.Location != StoreLocation.LocalMachine)
+						{
+							throw new PlatformNotSupportedException(SR.net_ssl_trust_store);
+						}
+					#endif
+				*/
+				using(var store = new X509Store(MtlsManagement.Configuration.ConfigurationKeys.IntermediateCertificateStoreName, StoreLocation.LocalMachine))
 				{
 					store.Open(OpenFlags.ReadOnly);
 
-					sslCertificateTrust = SslCertificateTrust.CreateForX509Store(store);
+					sslCertificateTrust = SslCertificateTrust.CreateForX509Store(store, true);
 				}
 			}
 			else
