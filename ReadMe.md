@@ -155,7 +155,7 @@ Configuration: [/Source/Mtls-Management/appsettings.json](/Source/Mtls-Managemen
 
 ### 2.2 Cleanup
 
-- Run [Mtls-Cleanup](/Source/Mtls-Cleanup) "as Administrator" to cleanup/remove certificates and [possibly registry-key (SendTrustedIssuerList)](/Source/Mtls-Cleanup/appsettings.json#L61).
+- Run [Mtls-Cleanup](/Source/Mtls-Cleanup) "as Administrator" to cleanup/remove certificates and [possibly registry-key (SendTrustedIssuerList)](/Source/Mtls-Management/appsettings.json#L61).
 
 Configuration: [/Source/Mtls-Management/appsettings.json](/Source/Mtls-Management/appsettings.json#L2)
 
