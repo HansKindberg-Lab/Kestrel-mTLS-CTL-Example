@@ -15,7 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".certificates", ".certifica
 		.certificates\intermediate-certificate-2.crt = .certificates\intermediate-certificate-2.crt
 		.certificates\intermediate-certificate-3.crt = .certificates\intermediate-certificate-3.crt
 		.certificates\intermediate-certificate-4.crt = .certificates\intermediate-certificate-4.crt
-		.certificates\ReadMe.md = .certificates\ReadMe.md
 		.certificates\root-certificate.crt = .certificates\root-certificate.crt
 	EndProjectSection
 EndProject
