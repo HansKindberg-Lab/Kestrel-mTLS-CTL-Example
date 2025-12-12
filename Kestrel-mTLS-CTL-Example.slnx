@@ -1,0 +1,30 @@
+<Solution>
+	<Folder Name="/.certificates/">
+		<File Path=".certificates/client-certificate-1.pfx" />
+		<File Path=".certificates/client-certificate-2.pfx" />
+		<File Path=".certificates/client-certificate-3.pfx" />
+		<File Path=".certificates/client-certificate-4.pfx" />
+		<File Path=".certificates/https-certificate.crt" />
+		<File Path=".certificates/https-certificate.key" />
+		<File Path=".certificates/intermediate-certificate-1.crt" />
+		<File Path=".certificates/intermediate-certificate-2.crt" />
+		<File Path=".certificates/intermediate-certificate-3.crt" />
+		<File Path=".certificates/intermediate-certificate-4.crt" />
+		<File Path=".certificates/root-certificate.crt" />
+	</Folder>
+	<Folder Name="/.root/">
+		<File Path=".editorconfig" />
+		<File Path=".gitignore" />
+		<File Path="Directory.Build.props" />
+		<File Path="Directory.Build.targets" />
+		<File Path="NuGet.config" />
+		<File Path="ReadMe.md" />
+	</Folder>
+	<Folder Name="/Source/">
+		<File Path="Source/.dockerignore" />
+		<Project DefaultStartup="true" Path="Source/Application/Application.csproj" />
+		<Project Path="Source/Mtls-Cleanup/Mtls-Cleanup.csproj" />
+		<Project Path="Source/Mtls-Management/Mtls-Management.csproj" />
+		<Project Path="Source/Mtls-Setup/Mtls-Setup.csproj" />
+	</Folder>
+</Solution>
