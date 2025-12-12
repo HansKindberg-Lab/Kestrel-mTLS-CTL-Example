@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<RootNamespace>MtlsCleanup</RootNamespace>
+		<RootNamespace>Setup</RootNamespace>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Mtls-Management\Mtls-Management.csproj" />
+		<ProjectReference Include="../Management/Management.csproj" />
 	</ItemGroup>
 </Project>

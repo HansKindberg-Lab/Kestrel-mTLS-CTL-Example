@@ -1,16 +1,16 @@
 <Solution>
 	<Folder Name="/.certificates/">
-		<File Path=".certificates/client-certificate-1.pfx" />
-		<File Path=".certificates/client-certificate-2.pfx" />
-		<File Path=".certificates/client-certificate-3.pfx" />
-		<File Path=".certificates/client-certificate-4.pfx" />
-		<File Path=".certificates/https-certificate.crt" />
-		<File Path=".certificates/https-certificate.key" />
-		<File Path=".certificates/intermediate-certificate-1.crt" />
-		<File Path=".certificates/intermediate-certificate-2.crt" />
-		<File Path=".certificates/intermediate-certificate-3.crt" />
-		<File Path=".certificates/intermediate-certificate-4.crt" />
-		<File Path=".certificates/root-certificate.crt" />
+		<File Path=".certificates/client-1.pfx" />
+		<File Path=".certificates/client-2.pfx" />
+		<File Path=".certificates/client-3.pfx" />
+		<File Path=".certificates/client-4.pfx" />
+		<File Path=".certificates/https.crt" />
+		<File Path=".certificates/https.key" />
+		<File Path=".certificates/intermediate-1.crt" />
+		<File Path=".certificates/intermediate-2.crt" />
+		<File Path=".certificates/intermediate-3.crt" />
+		<File Path=".certificates/intermediate-4.crt" />
+		<File Path=".certificates/root.crt" />
 	</Folder>
 	<Folder Name="/.root/">
 		<File Path=".dockerignore" />
@@ -21,10 +21,12 @@
 		<File Path="NuGet.config" />
 		<File Path="ReadMe.md" />
 	</Folder>
+	<Folder Name="/.windows-certificate-management/">
+		<Project Path=".windows-certificate-management/Cleanup/Cleanup.csproj" />
+		<Project Path=".windows-certificate-management/Management/Management.csproj" />
+		<Project Path=".windows-certificate-management/Setup/Setup.csproj" />
+	</Folder>
 	<Folder Name="/Source/">
 		<Project DefaultStartup="true" Path="Source/Application/Application.csproj" />
-		<Project Path="Source/Mtls-Cleanup/Mtls-Cleanup.csproj" />
-		<Project Path="Source/Mtls-Management/Mtls-Management.csproj" />
-		<Project Path="Source/Mtls-Setup/Mtls-Setup.csproj" />
 	</Folder>
 </Solution>

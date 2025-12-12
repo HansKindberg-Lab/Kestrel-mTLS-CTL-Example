@@ -2,14 +2,14 @@
 	<PropertyGroup>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<!-- Certificates to trust -->
-		<DockerfileRunArguments>-v "$(SolutionDir).certificates/intermediate-certificate-1.crt:/etc/ssl/certs/intermediate-certificate-1.crt:ro"</DockerfileRunArguments>
-		<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/intermediate-certificate-2.crt:/etc/ssl/certs/intermediate-certificate-2.crt:ro"</DockerfileRunArguments>
-		<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/intermediate-certificate-3.crt:/etc/ssl/certs/intermediate-certificate-3.crt:ro"</DockerfileRunArguments>
-		<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/intermediate-certificate-4.crt:/etc/ssl/certs/intermediate-certificate-4.crt:ro"</DockerfileRunArguments>
-		<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/root-certificate.crt:/etc/ssl/certs/root-certificate.crt:ro"</DockerfileRunArguments>
+		<DockerfileRunArguments>-v "$(SolutionDir).certificates/intermediate-1.crt:/etc/ssl/certs/intermediate-1.crt:ro"</DockerfileRunArguments>
+		<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/intermediate-2.crt:/etc/ssl/certs/intermediate-2.crt:ro"</DockerfileRunArguments>
+		<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/intermediate-3.crt:/etc/ssl/certs/intermediate-3.crt:ro"</DockerfileRunArguments>
+		<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/intermediate-4.crt:/etc/ssl/certs/intermediate-4.crt:ro"</DockerfileRunArguments>
+		<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/root.crt:/etc/ssl/certs/root.crt:ro"</DockerfileRunArguments>
 		<!-- HTTPS certificate -->
-		<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/https-certificate.crt:/etc/ssl/private/https-certificate.crt:ro"</DockerfileRunArguments>
-		<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/https-certificate.key:/etc/ssl/private/https-certificate.key:ro"</DockerfileRunArguments>
+		<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/https.crt:/etc/ssl/private/https.crt:ro"</DockerfileRunArguments>
+		<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/https.key:/etc/ssl/private/https.key:ro"</DockerfileRunArguments>
 		<UserSecretsId>649793ff-6d39-4691-98ed-e7c28e2027b0</UserSecretsId>
 	</PropertyGroup>
 	<ItemGroup>

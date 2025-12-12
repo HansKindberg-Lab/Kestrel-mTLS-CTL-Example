@@ -1,29 +1,27 @@
 using System.Runtime.Versioning;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
+using Management.Configuration;
+using Management.Internal;
+using Management.Security.Principal.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Win32;
-using MtlsManagement.Configuration;
-using MtlsManagement.Internal;
-using MtlsManagement.Security.Principal.Extensions;
 
 [assembly: SupportedOSPlatform("Windows")]
 
-namespace MtlsManagement
+namespace Management
 {
-	public class MtlsManager
+	public class Manager
 	{
 		#region Fields
 
-		private CleanupOptions? _cleanupOptions;
-		private static MtlsManager? _instance;
-		private SetupOptions? _setupOptions;
+		private static Manager? _instance;
 
 		#endregion
 
 		#region Constructors
 
-		private MtlsManager()
+		private Manager()
 		{
 			var baseDirectory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
 			this.ApplicationDirectory = baseDirectory.Parent!.Parent!.Parent!;
@@ -45,32 +43,32 @@ namespace MtlsManagement
 		{
 			get
 			{
-				if(this._cleanupOptions == null)
+				if(field == null)
 				{
 					var cleanupOptions = new CleanupOptions();
 					this.Configuration.GetSection("Cleanup").Bind(cleanupOptions);
-					this._cleanupOptions = cleanupOptions;
+					field = cleanupOptions;
 				}
 
-				return this._cleanupOptions;
+				return field;
 			}
 		}
 
 		private IConfiguration Configuration { get; }
-		private static MtlsManager Instance => _instance ??= new MtlsManager();
+		private static Manager Instance => _instance ??= new Manager();
 
 		private SetupOptions SetupOptions
 		{
 			get
 			{
-				if(this._setupOptions == null)
+				if(field == null)
 				{
 					var setupOptions = new SetupOptions();
 					this.Configuration.GetSection("Setup").Bind(setupOptions);
-					this._setupOptions = setupOptions;
+					field = setupOptions;
 				}
 
-				return this._setupOptions;
+				return field;
 			}
 		}
 
@@ -86,7 +84,7 @@ namespace MtlsManagement
 			if(ValidateElevatedPrivileges())
 			{
 				Instance.CleanupCertificates();
-				CleanupCertificateStores();
+				Instance.CleanupCertificateStores();
 
 				if(Instance.CleanupOptions.RemoveRegistryKeys)
 					Instance.CleanupRegistryKeys();
@@ -128,7 +126,7 @@ namespace MtlsManagement
 
 					if(storeExists)
 					{
-						x509Certificate = X509CertificateLoader.LoadPkcs12FromFile(path, certificate.Password);
+						x509Certificate = LoadCertificateFromCrtOrPfxFile(path, certificate.Password);
 
 						try
 						{
@@ -178,51 +176,52 @@ namespace MtlsManagement
 			}
 		}
 
-		private static void CleanupCertificateStores()
+		private void CleanupCertificateStores()
 		{
 			WriteLine("Cleanup certificate-stores ...");
 			WriteEmptyLine();
 
-			const string storeName = ConfigurationKeys.IntermediateCertificateStoreName;
-
-			foreach(var storeLocation in new[] { StoreLocation.CurrentUser, StoreLocation.LocalMachine })
+			foreach(var storeName in this.CleanupOptions.CertificateStores)
 			{
-				WriteLine($"Certificate-store: {storeLocation}/{storeName}");
-
-				try
+				foreach(var storeLocation in new[] { StoreLocation.CurrentUser, StoreLocation.LocalMachine })
 				{
-					var registryRoot = storeLocation == StoreLocation.LocalMachine ? Registry.LocalMachine : Registry.CurrentUser;
+					WriteLine($"Certificate-store: {storeLocation}/{storeName}");
 
-					var exists = GetCertificateStores(registryRoot).Contains(storeName, StringComparer.OrdinalIgnoreCase);
-
-					if(exists)
+					try
 					{
-						var internalStoreLocation = storeLocation == StoreLocation.LocalMachine ? WindowsCryptographic.CertificateStoreLocalMachine : WindowsCryptographic.CertificateStoreCurrentUser;
+						var registryRoot = storeLocation == StoreLocation.LocalMachine ? Registry.LocalMachine : Registry.CurrentUser;
 
-						WriteLine("Removing certificate-store ...");
+						var exists = GetCertificateStores(registryRoot).Contains(storeName, StringComparer.OrdinalIgnoreCase);
 
-						try
+						if(exists)
 						{
-							WindowsCryptographic.CertUnregisterSystemStore(ConfigurationKeys.IntermediateCertificateStoreName, WindowsCryptographic.CertificateStoreDelete | internalStoreLocation);
+							var internalStoreLocation = storeLocation == StoreLocation.LocalMachine ? WindowsCryptographic.CertificateStoreLocalMachine : WindowsCryptographic.CertificateStoreCurrentUser;
 
-							WriteGreenLine("Certificate-store removed.");
+							WriteLine("Removing certificate-store ...");
+
+							try
+							{
+								WindowsCryptographic.CertUnregisterSystemStore(storeName, WindowsCryptographic.CertificateStoreDelete | internalStoreLocation);
+
+								WriteGreenLine("Certificate-store removed.");
+							}
+							catch(Exception exception)
+							{
+								WriteRedLine($"Certificate-store NOT removed: {exception}");
+							}
 						}
-						catch(Exception exception)
+						else
 						{
-							WriteRedLine($"Certificate-store NOT removed: {exception}");
+							WriteLine("Does not exist.");
 						}
 					}
-					else
+					catch(Exception exception)
 					{
-						WriteLine("Does not exist.");
+						WriteRedLine($"{exception}");
 					}
-				}
-				catch(Exception exception)
-				{
-					WriteRedLine($"{exception}");
-				}
 
-				WriteEmptyLine();
+					WriteEmptyLine();
+				}
 			}
 		}
 
@@ -277,7 +276,7 @@ namespace MtlsManagement
 			}
 		}
 
-		private static IEnumerable<string> GetCertificateStores(RegistryKey registryRoot)
+		private static string[] GetCertificateStores(RegistryKey registryRoot)
 		{
 			using(var key = registryRoot.OpenSubKey(@"SOFTWARE\Microsoft\SystemCertificates", false))
 			{
@@ -296,6 +295,18 @@ namespace MtlsManagement
 				RegistryRoot.PerformanceData => Registry.PerformanceData,
 				RegistryRoot.Users => Registry.Users,
 				_ => throw new InvalidOperationException("No such registry-root."),
+			};
+		}
+
+		private static X509Certificate2 LoadCertificateFromCrtOrPfxFile(string path, string? password = null)
+		{
+			var extension = Path.GetExtension(path).ToLowerInvariant();
+
+			return extension switch
+			{
+				".crt" => X509CertificateLoader.LoadCertificateFromFile(path),
+				".pfx" => X509CertificateLoader.LoadPkcs12FromFile(path, password),
+				_ => throw new NotSupportedException($"File extension \"{extension}\" is not supported.")
 			};
 		}
 
@@ -340,7 +351,7 @@ namespace MtlsManagement
 					{
 						store.Open(OpenFlags.ReadWrite);
 
-						store.Add(X509CertificateLoader.LoadPkcs12FromFile(path, certificate.Password));
+						store.Add(LoadCertificateFromCrtOrPfxFile(path, certificate.Password));
 					}
 
 					WriteGreenLine("Certificate added.");
@@ -380,9 +391,9 @@ namespace MtlsManagement
 				{
 					WriteRedLine($"Registry-key NOT set: {exception}");
 				}
-			}
 
-			WriteEmptyLine();
+				WriteEmptyLine();
+			}
 		}
 
 		private static bool ValidateElevatedPrivileges()
@@ -428,6 +439,11 @@ namespace MtlsManagement
 		private static void WriteRedLine(string? value)
 		{
 			WriteLine(value, ConsoleColor.Red);
+		}
+
+		private static void WriteYellowLine(string? value)
+		{
+			WriteLine(value, ConsoleColor.Yellow);
 		}
 
 		#endregion

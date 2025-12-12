@@ -1,4 +1,4 @@
-namespace MtlsManagement.Configuration
+namespace Management.Configuration
 {
 	public enum RegistryRoot
 	{

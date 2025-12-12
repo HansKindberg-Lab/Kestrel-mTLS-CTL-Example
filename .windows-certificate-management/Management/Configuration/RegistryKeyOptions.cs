@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32;
 
-namespace MtlsManagement.Configuration
+namespace Management.Configuration
 {
 	public class RegistryKeyOptions
 	{

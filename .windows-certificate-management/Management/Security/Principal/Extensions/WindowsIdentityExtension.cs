@@ -1,6 +1,6 @@
 ﻿using System.Security.Principal;
 
-namespace MtlsManagement.Security.Principal.Extensions
+namespace Management.Security.Principal.Extensions
 {
 	public static class WindowsIdentityExtension
 	{

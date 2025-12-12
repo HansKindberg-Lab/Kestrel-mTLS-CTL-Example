@@ -1,5 +1,5 @@
 using System.Runtime.Versioning;
-using MtlsManagement;
+using Management;
 
 [assembly: SupportedOSPlatform("Windows")]
-MtlsManager.Cleanup();
+Manager.Cleanup();

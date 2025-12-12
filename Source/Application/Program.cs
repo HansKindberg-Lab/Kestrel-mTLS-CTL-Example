@@ -59,7 +59,7 @@ builder.WebHost.ConfigureKestrel(kestrelServerOptions =>
 						}
 					#endif
 				*/
-				using(var store = new X509Store("Intermediate-Certificates-5e8d0353-579e-40a1-a20f-c1f5f74ab8a8", StoreLocation.LocalMachine)) // This store must have been set up in the Windows Certificate Manager.
+				using(var store = new X509Store("Store-bc8fd192-bb7a-41a1-b470-b2c356aac15b", StoreLocation.LocalMachine)) // This store must have been set up in the Windows Certificate Manager. You can set it upp with .windows-certificate-management/Setup in this solution.
 				{
 					store.Open(OpenFlags.ReadOnly);
 
@@ -69,8 +69,8 @@ builder.WebHost.ConfigureKestrel(kestrelServerOptions =>
 			else
 			{
 				var certificates = new X509Certificate2Collection();
-				certificates.ImportFromPemFile("/etc/ssl/certs/intermediate-certificate-1.crt");
-				certificates.ImportFromPemFile("/etc/ssl/certs/intermediate-certificate-2.crt");
+				certificates.ImportFromPemFile("/etc/ssl/certs/intermediate-1.crt");
+				certificates.ImportFromPemFile("/etc/ssl/certs/intermediate-2.crt");
 
 				sslCertificateTrust = SslCertificateTrust.CreateForX509Collection(certificates, true);
 			}

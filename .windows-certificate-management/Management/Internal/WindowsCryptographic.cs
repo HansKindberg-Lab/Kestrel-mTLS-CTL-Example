@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace MtlsManagement.Internal
+namespace Management.Internal
 {
 	/// <summary>
 	/// Removing a Windows System Certificate Store: http://www.digitallycreated.net/Blog/58/removing-a-windows-system-certificate-store

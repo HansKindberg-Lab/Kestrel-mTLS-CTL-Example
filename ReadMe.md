@@ -63,7 +63,7 @@ This is briefly howto fix it:
 							}
 						#endif
 					*/
-					using(var store = new X509Store(MtlsManagement.Configuration.ConfigurationKeys.IntermediateCertificateStoreName, StoreLocation.LocalMachine))
+					using(var store = new X509Store("Store-bc8fd192-bb7a-41a1-b470-b2c356aac15b", StoreLocation.LocalMachine)) // This store must have been set up in the Windows Certificate Manager. You can set it upp with .windows-certificate-management/Setup in this solution.
 					{
 						store.Open(OpenFlags.ReadOnly);
 
@@ -73,8 +73,8 @@ This is briefly howto fix it:
 				else
 				{
 					var certificates = new X509Certificate2Collection();
-					certificates.ImportFromPemFile("/etc/ssl/certs/intermediate-certificate-1.crt");
-					certificates.ImportFromPemFile("/etc/ssl/certs/intermediate-certificate-2.crt");
+					certificates.ImportFromPemFile("/etc/ssl/certs/intermediate-1.crt");
+					certificates.ImportFromPemFile("/etc/ssl/certs/intermediate-2.crt");
 
 					sslCertificateTrust = SslCertificateTrust.CreateForX509Collection(certificates, true);
 				}
@@ -102,8 +102,8 @@ This is briefly howto fix it:
 		"Kestrel": {
 			"Certificates": {
 				"Default": {
-					"KeyPath": "/etc/ssl/private/https-certificate.key",
-					"Path": "/etc/ssl/private/https-certificate.crt"
+					"KeyPath": "/etc/ssl/private/https.key",
+					"Path": "/etc/ssl/private/https.crt"
 				}
 			}
 		}
@@ -115,8 +115,8 @@ This is briefly howto fix it:
 		"Kestrel": {
 			"Certificates": {
 				"Default": {
-					"KeyPath": "../../.certificates/https-certificate.key",
-					"Path": "../../.certificates/https-certificate.crt"
+					"KeyPath": "../../.certificates/https.key",
+					"Path": "../../.certificates/https.crt"
 				}
 			}
 		}
@@ -128,14 +128,14 @@ This is briefly howto fix it:
 		<PropertyGroup>
 			...
 			<!-- Certificates to trust -->
-			<DockerfileRunArguments>-v "$(SolutionDir).certificates/intermediate-certificate-1.crt:/etc/ssl/certs/intermediate-certificate-1.crt:ro"</DockerfileRunArguments>
-			<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/intermediate-certificate-2.crt:/etc/ssl/certs/intermediate-certificate-2.crt:ro"</DockerfileRunArguments>
-			<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/intermediate-certificate-3.crt:/etc/ssl/certs/intermediate-certificate-3.crt:ro"</DockerfileRunArguments>
-			<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/intermediate-certificate-4.crt:/etc/ssl/certs/intermediate-certificate-4.crt:ro"</DockerfileRunArguments>
-			<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/root-certificate.crt:/etc/ssl/certs/root-certificate.crt:ro"</DockerfileRunArguments>
+			<DockerfileRunArguments>-v "$(SolutionDir).certificates/intermediate-1.crt:/etc/ssl/certs/intermediate-1.crt:ro"</DockerfileRunArguments>
+			<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/intermediate-2.crt:/etc/ssl/certs/intermediate-2.crt:ro"</DockerfileRunArguments>
+			<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/intermediate-3.crt:/etc/ssl/certs/intermediate-3.crt:ro"</DockerfileRunArguments>
+			<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/intermediate-4.crt:/etc/ssl/certs/intermediate-4.crt:ro"</DockerfileRunArguments>
+			<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/root.crt:/etc/ssl/certs/root.crt:ro"</DockerfileRunArguments>
 			<!-- HTTPS certificate -->
-			<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/https-certificate.crt:/etc/ssl/private/https-certificate.crt:ro"</DockerfileRunArguments>
-			<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/https-certificate.key:/etc/ssl/private/https-certificate.key:ro"</DockerfileRunArguments>
+			<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/https.crt:/etc/ssl/private/https.crt:ro"</DockerfileRunArguments>
+			<DockerfileRunArguments>$(DockerfileRunArguments) -v "$(SolutionDir).certificates/https.key:/etc/ssl/private/https.key:ro"</DockerfileRunArguments>
 			...
 		</PropertyGroup>
 		...
@@ -143,162 +143,177 @@ This is briefly howto fix it:
 
 ## 2 Environment
 
+To be able to run the application from Visual Studio when we develop there are some requirements to get it working:
+
+- We need certificates in our certificate-store.
+- We need the registry-key HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\SCHANNEL\\SendTrustedIssuerList (value = 1, DWord).
+
 ### 2.1 Setup
 
-We need certificates in our certificate-store and the registry-key HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\SCHANNEL\\SendTrustedIssuerList (value = 1, DWord) to get it working.
+- Run [Setup](/.windows-certificate-management/Setup) "as Administrator" to setup certificates and registry-key (SendTrustedIssuerList). You can do it by building the solution and then right-click [/.windows-certificate-management/Setup/bin/Debug/net10.0/Setup.exe](/.windows-certificate-management/Setup/bin/Debug/net10.0/Setup.exe) and choose "Run as Administrator".
 
-- Run [Mtls-Setup](/Source/Mtls-Setup) "as Administrator" to setup certificates and registry-key (SendTrustedIssuerList).
-
-Configuration: [/Source/Mtls-Management/appsettings.json](/Source/Mtls-Management/appsettings.json#L63)
+Configuration: [/.windows-certificate-management/Management/appsettings.json](/.windows-certificate-management/Management/appsettings.json#L83)
 
 - [Overview of TLS - SSL (Schannel SSP) / Management of trusted issuers for client authentication / SendTrustedIssuerList](https://learn.microsoft.com/en-us/windows-server/security/tls/what-s-new-in-tls-ssl-schannel-ssp-overview#BKMK_TrustedIssuers)
 
 ### 2.2 Cleanup
 
-- Run [Mtls-Cleanup](/Source/Mtls-Cleanup) "as Administrator" to cleanup/remove certificates and [possibly registry-key (SendTrustedIssuerList)](/Source/Mtls-Management/appsettings.json#L61).
+- Run [Cleanup](/.windows-certificate-management/Cleanup) "as Administrator" to cleanup/remove certificates and [possibly registry-key (SendTrustedIssuerList)](/.windows-certificate-management/Management/appsettings.json#L81). You can do it by building the solution and then right-click [/.windows-certificate-management/Cleanup/bin/Debug/net10.0/Cleanup.exe](/.windows-certificate-management/Cleanup/bin/Debug/net10.0/Cleanup.exe) and choose "Run as Administrator".
 
-Configuration: [/Source/Mtls-Management/appsettings.json](/Source/Mtls-Management/appsettings.json#L2)
+Configuration: [/.windows-certificate-management/Management/appsettings.json](/.windows-certificate-management/Management/appsettings.json#L2)
 
 ## 3 Certificates
 
 The certificates are only for testing/laborating.
 
-In this example the client-certificate trust list will contain 2 intermediate certificates which will result in a certificate popup with two client certificates, client-certificate-1 and client-certificate-2. So even if we have client-certificate-3 and client-certificate-4 in our certificate-store we will not get them in the certificate popup.
-
 All the necessary certificate-files are included in this solution:
 
-- [**client-certificate-1.pfx**](/.certificates/client-certificate-1.pfx) - *CERT:\\CurrentUser\\My* - password = **password**
-- [**client-certificate-2.pfx**](/.certificates/client-certificate-2.pfx) - *CERT:\\CurrentUser\\My* - password = **password**
-- [**client-certificate-3.pfx**](/.certificates/client-certificate-3.pfx) - *CERT:\\CurrentUser\\My* - password = **password**
-- [**client-certificate-4.pfx**](/.certificates/client-certificate-4.pfx) - *CERT:\\CurrentUser\\My* - password = **password**
-- [**https-certificate.crt**](/.certificates/https-certificate.crt) - used in [appsettings.Docker.json](/Source/Application/appsettings.Docker.json#L6) and [appsettings.Kestrel.json](/Source/Application/appsettings.Kestrel.json#L6) to configure the https-certificate
-- [**https-certificate.key**](/.certificates/https-certificate.key) - used in [appsettings.Docker.json](/Source/Application/appsettings.Docker.json#L5) and [appsettings.Kestrel.json](/Source/Application/appsettings.Kestrel.json#L5) to configure the https-certificate
-- [**intermediate-certificate-1.crt**](/.certificates/intermediate-certificate-1.crt) - *CERT:\\CurrentUser\\CA* and *CERT:\\LocalMachine\\Intermediate-Certificates-5e8d0353-579e-40a1-a20f-c1f5f74ab8a8*
-- [**intermediate-certificate-2.crt**](/.certificates/intermediate-certificate-2.crt) - *CERT:\\CurrentUser\\CA* and *CERT:\\LocalMachine\\Intermediate-Certificates-5e8d0353-579e-40a1-a20f-c1f5f74ab8a8*
-- [**intermediate-certificate-3.crt**](/.certificates/intermediate-certificate-3.crt) - *CERT:\\CurrentUser\\CA*
-- [**intermediate-certificate-4.crt**](/.certificates/intermediate-certificate-4.crt) - *CERT:\\CurrentUser\\CA*
-- [**root-certificate.crt**](/.certificates/root-certificate.crt) - *CERT:\\CurrentUser\\Root*
+- [**client-1.pfx**](/.certificates/client-1.pfx) - *CERT:\\CurrentUser\\My* - password = **password**
+- [**client-2.pfx**](/.certificates/client-2.pfx) - *CERT:\\CurrentUser\\My* - password = **password**
+- [**client-3.pfx**](/.certificates/client-3.pfx) - *CERT:\\CurrentUser\\My* - password = **password**
+- [**client-4.pfx**](/.certificates/client-4.pfx) - *CERT:\\CurrentUser\\My* - password = **password**
+- [**https.crt**](/.certificates/https.crt) - used in [appsettings.Docker.json](/Source/Application/appsettings.Docker.json#L6) and [appsettings.Kestrel.json](/Source/Application/appsettings.Kestrel.json#L6) to configure the https-certificate
+- [**https.key**](/.certificates/https.key) - used in [appsettings.Docker.json](/Source/Application/appsettings.Docker.json#L5) and [appsettings.Kestrel.json](/Source/Application/appsettings.Kestrel.json#L5) to configure the https-certificate
+- [**intermediate-1.crt**](/.certificates/intermediate-1.crt) - *CERT:\\CurrentUser\\CA*, *CERT:\\LocalMachine\\Store-bc8fd192-bb7a-41a1-b470-b2c356aac15b* and *CERT:\\LocalMachine\\Store-c985b698-1534-440f-9857-070c8dfd6bfd*
+- [**intermediate-2.crt**](/.certificates/intermediate-2.crt) - *CERT:\\CurrentUser\\CA* and *CERT:\\LocalMachine\\Store-bc8fd192-bb7a-41a1-b470-b2c356aac15b*
+- [**intermediate-3.crt**](/.certificates/intermediate-3.crt) - *CERT:\\CurrentUser\\CA* and *CERT:\\LocalMachine\\Store-bc8fd192-bb7a-41a1-b470-b2c356aac15b*
+- [**intermediate-4.crt**](/.certificates/intermediate-4.crt) - *CERT:\\CurrentUser\\CA*
+- [**root.crt**](/.certificates/root.crt) - *CERT:\\CurrentUser\\Root*
 
 If you want to create them yourself, you need to create the following certificate-structure.
 
-- root-certificate
-	- https-certificate
-	- intermediate-certificate-1
-		- client-certificate-1
-	- intermediate-certificate-2
-		- client-certificate-2
-	- intermediate-certificate-3
-		- client-certificate-3
-	- intermediate-certificate-4
-		- client-certificate-4
+- root
+	- https
+	- intermediate-1
+		- client-1
+	- intermediate-2
+		- client-2
+	- intermediate-3
+		- client-3
+	- intermediate-4
+		- client-4
 
-The certificates in this solution are created by using this web-application, [Certificate-Factory](https://github.com/HansKindberg-Lab/Certificate-Factory). It is a web-application you can run in Visual Studio and then upload a json-certificate-file like this:
+The certificates in this solution are created by using this web-application, [Certificate-Factory](https://github.com/HansKindberg-Lab/Certificate-Factory). It is a web-application you can run in Visual Studio and then upload a json-certificate-file like below.
 
-	{
-		"Defaults": {
-			"HashAlgorithm": "Sha256",
-			"NotAfter": "2050-01-01"
-		},
-		"Roots": {
-			"root-certificate": {
-				"Certificate": {
-					"Subject": "CN=Kestrel-mTLS-CTL-Example Root CA"
-				},
-				"IssuedCertificates": {
-					"https-certificate": {
-						"Certificate": {
-							"EnhancedKeyUsage": "ServerAuthentication",
-							"KeyUsage": "DigitalSignature",
-							"Subject": "CN=Kestrel-mTLS-CTL-Example https-certificate",
-							"SubjectAlternativeName": {
-								"DnsNames": [
-									"localhost"
-								]
-							}
-						}
+1. **File \*** (upload a json-file like below)
+
+		{
+			"Defaults": {
+				"HashAlgorithm": "Sha256",
+				"NotAfter": "9999-01-01"
+			},
+			"Roots": {
+				"root": {
+					"Certificate": {
+						"Subject": "CN=Kestrel-mTLS-CTL-Example Root CA"
 					},
-					"intermediate-certificate-1": {
-						"Certificate": {
-							"CertificateAuthority": {
-								"PathLengthConstraint": 0
-							},
-							"KeyUsage": "KeyCertSign",
-							"Subject": "CN=Kestrel-mTLS-CTL-Example Intermediate CA 1"
-						},
-						"IssuedCertificates": {
-							"client-certificate-1": {
-								"Certificate": {
-									"EnhancedKeyUsage": "ClientAuthentication",
-									"KeyUsage": "DigitalSignature",
-									"Subject": "CN=Kestrel-mTLS-CTL-Example client-certificate 1"
+					"IssuedCertificates": {
+						"https": {
+							"Certificate": {
+								"EnhancedKeyUsage": "ServerAuthentication",
+								"KeyUsage": "DigitalSignature",
+								"Subject": "CN=Kestrel-mTLS-CTL-Example https-certificate",
+								"SubjectAlternativeName": {
+									"DnsNames": [
+										"localhost"
+									]
 								}
 							}
-						}
-					},
-					"intermediate-certificate-2": {
-						"Certificate": {
-							"CertificateAuthority": {
-								"PathLengthConstraint": 0
-							},
-							"KeyUsage": "KeyCertSign",
-							"Subject": "CN=Kestrel-mTLS-CTL-Example Intermediate CA 2"
 						},
-						"IssuedCertificates": {
-							"client-certificate-2": {
-								"Certificate": {
-									"EnhancedKeyUsage": "ClientAuthentication",
-									"KeyUsage": "DigitalSignature",
-									"Subject": "CN=Kestrel-mTLS-CTL-Example client-certificate 2"
+						"intermediate-1": {
+							"Certificate": {
+								"CertificateAuthority": {
+									"PathLengthConstraint": 0
+								},
+								"KeyUsage": "KeyCertSign",
+								"Subject": "CN=Kestrel-mTLS-CTL-Example Intermediate CA 1"
+							},
+							"IssuedCertificates": {
+								"client-1": {
+									"Certificate": {
+										"EnhancedKeyUsage": "ClientAuthentication",
+										"KeyUsage": "DigitalSignature",
+										"Subject": "CN=Kestrel-mTLS-CTL-Example client-certificate 1"
+									}
 								}
 							}
-						}
-					},
-					"intermediate-certificate-3": {
-						"Certificate": {
-							"CertificateAuthority": {
-								"PathLengthConstraint": 0
-							},
-							"KeyUsage": "KeyCertSign",
-							"Subject": "CN=Kestrel-mTLS-CTL-Example Intermediate CA 3"
 						},
-						"IssuedCertificates": {
-							"client-certificate-3": {
-								"Certificate": {
-									"EnhancedKeyUsage": "ClientAuthentication",
-									"KeyUsage": "DigitalSignature",
-									"Subject": "CN=Kestrel-mTLS-CTL-Example client-certificate 3"
+						"intermediate-2": {
+							"Certificate": {
+								"CertificateAuthority": {
+									"PathLengthConstraint": 0
+								},
+								"KeyUsage": "KeyCertSign",
+								"Subject": "CN=Kestrel-mTLS-CTL-Example Intermediate CA 2"
+							},
+							"IssuedCertificates": {
+								"client-2": {
+									"Certificate": {
+										"EnhancedKeyUsage": "ClientAuthentication",
+										"KeyUsage": "DigitalSignature",
+										"Subject": "CN=Kestrel-mTLS-CTL-Example client-certificate 2"
+									}
 								}
 							}
-						}
-					},
-					"intermediate-certificate-4": {
-						"Certificate": {
-							"CertificateAuthority": {
-								"PathLengthConstraint": 0
-							},
-							"KeyUsage": "KeyCertSign",
-							"Subject": "CN=Kestrel-mTLS-CTL-Example Intermediate CA 4"
 						},
-						"IssuedCertificates": {
-							"client-certificate-4": {
-								"Certificate": {
-									"EnhancedKeyUsage": "ClientAuthentication",
-									"KeyUsage": "DigitalSignature",
-									"Subject": "CN=Kestrel-mTLS-CTL-Example client-certificate 4"
+						"intermediate-3": {
+							"Certificate": {
+								"CertificateAuthority": {
+									"PathLengthConstraint": 0
+								},
+								"KeyUsage": "KeyCertSign",
+								"Subject": "CN=Kestrel-mTLS-CTL-Example Intermediate CA 3"
+							},
+							"IssuedCertificates": {
+								"client-3": {
+									"Certificate": {
+										"EnhancedKeyUsage": "ClientAuthentication",
+										"KeyUsage": "DigitalSignature",
+										"Subject": "CN=Kestrel-mTLS-CTL-Example client-certificate 3"
+									}
+								}
+							}
+						},
+						"intermediate-4": {
+							"Certificate": {
+								"CertificateAuthority": {
+									"PathLengthConstraint": 0
+								},
+								"KeyUsage": "KeyCertSign",
+								"Subject": "CN=Kestrel-mTLS-CTL-Example Intermediate CA 4"
+							},
+							"IssuedCertificates": {
+								"client-4": {
+									"Certificate": {
+										"EnhancedKeyUsage": "ClientAuthentication",
+										"KeyUsage": "DigitalSignature",
+										"Subject": "CN=Kestrel-mTLS-CTL-Example client-certificate 4"
+									}
 								}
 							}
 						}
 					}
 				}
-			}
-		},
-		"RootsDefaults": {
-			"CertificateAuthority": {
-				"PathLengthConstraint": null
 			},
-			"KeyUsage": "KeyCertSign"
+			"RootsDefaults": {
+				"CertificateAuthority": {
+					"CertificateAuthority": true
+				},
+				"KeyUsage": "CrlSign, KeyCertSign"
+			}
 		}
-	}
+
+2. **Archive kind \***
+
+	Choose **\*.crt, \*.key and \*.pfx files**
+
+3. **Flat archive**
+
+	**Checked**
+
+4. **Password \***
+
+	Use **password** as password when creating the certificates.
 
 You will then get a zip-file including all certificate-files.
 

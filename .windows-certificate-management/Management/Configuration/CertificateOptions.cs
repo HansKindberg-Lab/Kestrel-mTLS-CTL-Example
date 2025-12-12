@@ -1,7 +1,7 @@
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace MtlsManagement.Configuration
+namespace Management.Configuration
 {
 	public class CertificateOptions : ICloneable, IComparable<CertificateOptions>, IEquatable<CertificateOptions>
 	{
@@ -54,6 +54,39 @@ namespace MtlsManagement.Configuration
 		public override int GetHashCode()
 		{
 			return this.ToString().GetHashCode();
+		}
+
+		public static bool operator ==(CertificateOptions? left, CertificateOptions? right)
+		{
+			if(left is null)
+				return right is null;
+
+			return left.Equals(right);
+		}
+
+		public static bool operator >(CertificateOptions? left, CertificateOptions? right)
+		{
+			return left is not null && left.CompareTo(right) > 0;
+		}
+
+		public static bool operator >=(CertificateOptions? left, CertificateOptions? right)
+		{
+			return left is null ? right is null : left.CompareTo(right) >= 0;
+		}
+
+		public static bool operator !=(CertificateOptions? left, CertificateOptions? right)
+		{
+			return !(left == right);
+		}
+
+		public static bool operator <(CertificateOptions? left, CertificateOptions? right)
+		{
+			return left is null ? right is not null : left.CompareTo(right) < 0;
+		}
+
+		public static bool operator <=(CertificateOptions? left, CertificateOptions? right)
+		{
+			return left is null || left.CompareTo(right) <= 0;
 		}
 
 		public override string ToString()
