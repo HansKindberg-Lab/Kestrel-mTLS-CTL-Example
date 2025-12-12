@@ -209,11 +209,15 @@ The certificates in this solution are created by using this web-application, [Ce
 						"https": {
 							"Certificate": {
 								"EnhancedKeyUsage": "ServerAuthentication",
-								"KeyUsage": "DigitalSignature",
+								"KeyUsage": "DigitalSignature, KeyEncipherment",
 								"Subject": "CN=Kestrel-mTLS-CTL-Example https-certificate",
 								"SubjectAlternativeName": {
 									"DnsNames": [
+										"*.example.localhost",
 										"localhost"
+									],
+									"IpAddresses": [
+										"127.0.0.1"
 									]
 								}
 							}
@@ -322,3 +326,4 @@ You will then get a zip-file including all certificate-files.
 - [Access denied when trying to load X509Certificate2 on (upgraded) Windows 10 April 2018 Update #25](https://github.com/Microsoft/dotnet-framework-early-access/issues/25)
 - [Default permissions for the MachineKeys folders](https://learn.microsoft.com/en-US/troubleshoot/windows-server/windows-security/default-permissions-machinekeys-folders)
 - [Solving Access Denied in Crypto Machine Keys](https://odetocode.com/blogs/scott/archive/2020/01/12/solving-access-denied-in-crypto-machine-keys.aspx)
+- [Support for the .localhost top-level domain](https://learn.microsoft.com/en-us/aspnet/core/test/localhost-tld)
