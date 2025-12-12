@@ -59,7 +59,7 @@ builder.WebHost.ConfigureKestrel(kestrelServerOptions =>
 						}
 					#endif
 				*/
-				using(var store = new X509Store(MtlsManagement.Configuration.ConfigurationKeys.IntermediateCertificateStoreName, StoreLocation.LocalMachine))
+				using(var store = new X509Store("Intermediate-Certificates-5e8d0353-579e-40a1-a20f-c1f5f74ab8a8", StoreLocation.LocalMachine)) // This store must have been set up in the Windows Certificate Manager.
 				{
 					store.Open(OpenFlags.ReadOnly);
 

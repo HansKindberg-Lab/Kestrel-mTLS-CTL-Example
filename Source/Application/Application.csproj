@@ -15,7 +15,4 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
 	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\Mtls-Management\Mtls-Management.csproj" />
-	</ItemGroup>
 </Project>
