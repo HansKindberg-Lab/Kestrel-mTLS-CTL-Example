@@ -128,7 +128,7 @@ namespace MtlsManagement
 
 					if(storeExists)
 					{
-						x509Certificate = new X509Certificate2(path, certificate.Password);
+						x509Certificate = X509CertificateLoader.LoadPkcs12FromFile(path, certificate.Password);
 
 						try
 						{
@@ -340,7 +340,7 @@ namespace MtlsManagement
 					{
 						store.Open(OpenFlags.ReadWrite);
 
-						store.Add(new X509Certificate2(path, certificate.Password));
+						store.Add(X509CertificateLoader.LoadPkcs12FromFile(path, certificate.Password));
 					}
 
 					WriteGreenLine("Certificate added.");
