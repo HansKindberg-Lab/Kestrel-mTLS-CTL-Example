@@ -8,8 +8,6 @@ This dotnet-issue can be used as a starting point to explain what we want to ach
 
 - [Developers using Kestrel can configure the list of CAs per-hostname #45456](https://github.com/dotnet/runtime/issues/45456)
 
-I think we need at least net 7 to get it working.
-
 ## 1 Development
 
 ### 1.1 Briefly
